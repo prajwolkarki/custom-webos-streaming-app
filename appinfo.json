@@ -11,5 +11,6 @@
   "splashBackground": "assets/images/backgrounds/splash.png",
   "transparent": false,
   "resolution": "1920x1080",
-  "supportPortraitMode": false
+  "supportPortraitMode": false,
+  "disableJavaScriptMinification": true
 }

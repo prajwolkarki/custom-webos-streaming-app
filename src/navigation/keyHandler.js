@@ -45,7 +45,7 @@ function handleGlobalKeydown(e) {
     case SCREENS.PLAYER:
       showPlayerHud(
         APP.currentDetail ? (APP.currentDetail.title || APP.currentDetail.name) : 'CineStream',
-        APP.currentDetail?.media_type === 'tv' ? `Season ${APP.currentSeasonIndex} - Episode ${APP.currentEpisode}` : 'Feature movie'
+        (APP.currentDetail && APP.currentDetail.media_type === 'tv') ? `Season ${APP.currentSeasonIndex} - Episode ${APP.currentEpisode}` : 'Feature movie'
       );
       if (code === KEY_CODES.OK) closePlayer();
       break;

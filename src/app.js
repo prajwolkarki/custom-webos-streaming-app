@@ -506,7 +506,7 @@ document.getElementById('detail-screen').addEventListener('click', function (e) 
     triggerDetailEnterAction(FOCUS_ZONES.EPISODES);
     updateFocusVisuals();
   } else if (target.classList.contains('cast-chip')) {
-    const name = target.querySelector('.cast-name')?.innerText || 'Actor';
+    const name = (target.querySelector('.cast-name') || {}).innerText || 'Actor';
     showToast(`Actor: ${name}`, false);
   } else if (target.id && target.id.startsWith('detail-card-')) {
     const rest = target.id.replace('detail-card-', '');

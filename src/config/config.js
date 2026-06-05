@@ -9,7 +9,7 @@ const CONFIG = {
   },
   TMDB: {
     BASE_URL: 'https://api.themoviedb.org/3',
-    API_KEY: '2668df122d5919267bedb70261c67a5e',
+    API_KEY: 'yourapikey',
     IMAGE_BASE: 'https://image.tmdb.org/t/p/w500',
     BACKDROP_BASE: 'https://image.tmdb.org/t/p/original',
     POSTER_SIZE: 'w500'
@@ -55,7 +55,7 @@ const TV_CATEGORIES = [
   { id: 'on_the_air', title: 'On The Air This Week', type: 'tv', endpoint: '/tv/on_the_air' },
   { id: 'top_rated_tv', title: 'Top Rated Series', type: 'tv', endpoint: '/tv/top_rated' },
   { id: 'popular_tv', title: 'Most Popular Shows', type: 'tv', endpoint: '/tv/popular' },
-  { id: 'vidsrc_latest_tv', title: 'Latest Episodes Added (VidSrc)', type: 'tv', isVidSrc: true, endpoint: 'https://vsembed.ru/episodes/latest/page-1.json' },
+  { id: 'vidsrc_latest_tv', title: 'Latest Episodes Added (VidSrc)', type: 'tv', isVidSrc: true, endpoint: 'https://vidsrc-embed.ru/episodes/latest/page-1.json' },
   { id: 'action_tv', title: 'Action TV', type: 'tv', endpoint: '/discover/tv?with_genres=10759&sort_by=popularity.desc' },
   { id: 'crime_tv', title: 'Crime & Mystery', type: 'tv', endpoint: '/discover/tv?with_genres=80,9648&sort_by=popularity.desc' },
   { id: 'comedy_tv', title: 'Comedy Series', type: 'tv', endpoint: '/discover/tv?with_genres=35&sort_by=popularity.desc' },
