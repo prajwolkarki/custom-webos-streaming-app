@@ -1,5 +1,10 @@
 # VidSrc Streaming App for LG webOS TV
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Lint](https://img.shields.io/badge/lint-eslint-4B32C3?logo=eslint)](https://eslint.org)
+[![Type Check](https://img.shields.io/badge/type_check-tsc-3178C6?logo=typescript)](https://www.typescriptlang.org)
+[![Deploy](https://img.shields.io/badge/deploy-webOS%20CLI-green?logo=webos)](https://webostv.developer.lge.com/develop/app-test)
+
 A streaming application built for LG webOS Smart TVs using the VidSrc embed API.
 
 ## Features
@@ -12,12 +17,12 @@ A streaming application built for LG webOS Smart TVs using the VidSrc embed API.
 
 ## API Endpoints Used
 
-- Movies: `https://vidsrc-embed.ru/embed/movie/{imdb|tmdb}`
-- TV Shows: `https://vidsrc-embed.ru/embed/tv/{imdb|tmdb}`
-- Episodes: `https://vidsrc-embed.ru/embed/tv/{imdb|tmdb}/{season}-{episode}`
-- Latest Movies: `https://vidsrc-embed.ru/movies/latest/page-{PAGE}.json`
-- Latest TV Shows: `https://vidsrc-embed.ru/tvshows/latest/page-{PAGE}.json`
-- Latest Episodes: `https://vidsrc-embed.ru/episodes/latest/page-{PAGE}.json`
+- Movies: `https://vsembed.ru/embed/movie/{imdb|tmdb}`
+- TV Shows: `https://vsembed.ru/embed/tv/{imdb|tmdb}`
+- Episodes: `https://vsembed.ru/embed/tv/{imdb|tmdb}/{season}-{episode}`
+- Latest Movies: `https://vsembed.ru/movies/latest/page-{PAGE}.json`
+- Latest TV Shows: `https://vsembed.ru/tvshows/latest/page-{PAGE}.json`
+- Latest Episodes: `https://vsembed.ru/episodes/latest/page-{PAGE}.json`
 
 ## Installation on webOS
 

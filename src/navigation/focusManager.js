@@ -1,193 +1,134 @@
-/**
- * Focus Manager
- * Handles focus states and visual indicators for TV navigation
- */
+function updateFocusVisuals() {
+  document.querySelectorAll('.focused').forEach(node => {
+    node.classList.remove('focused');
+  });
 
-class FocusManager {
-    constructor() {
-        this.currentFocus = null;
-        this.focusHistory = [];
-        this.focusClasses = {
-            focused: 'focused',
-            selected: 'selected'
-        };
+  const zone = APP.focusZone;
+  const col = APP.focusedCol;
+  const row = APP.focusedRow;
+  let focusedNode = null;
+
+  if (APP.screen === SCREENS.HOME) {
+    if (zone === FOCUS_ZONES.TABBAR) {
+      const items = document.querySelectorAll('#nav-tabs .tab-item');
+      focusedNode = items[col];
+    } else if (zone === FOCUS_ZONES.HERO) {
+      const btns = document.querySelectorAll('#hero-buttons .hero-btn');
+      focusedNode = btns[col];
+    } else if (zone === FOCUS_ZONES.ROWS) {
+      focusedNode = document.getElementById(`card-${row}-${col}`);
+      if (!focusedNode) {
+        focusedNode = document.getElementById(`row-see-all-${row}`);
+      }
     }
-
-    init() {
-        console.log('[FocusManager] Initialized');
+  } else if (APP.screen === SCREENS.DETAIL) {
+    if (zone === FOCUS_ZONES.DETAIL_ACTIONS) {
+      const btns = document.querySelectorAll('#detail-actions-row .detail-btn');
+      focusedNode = btns[col];
+    } else if (zone === FOCUS_ZONES.SEASONS) {
+      focusedNode = document.getElementById(`season-tab-${col}`);
+    } else if (zone === FOCUS_ZONES.EPISODES) {
+      const idx = APP.detailEpisodeRow * 4 + APP.detailEpisodeCol;
+      focusedNode = document.getElementById(`episode-card-${idx}`);
+    } else if (zone === FOCUS_ZONES.CAST) {
+      focusedNode = document.getElementById(`cast-actor-${col}`);
+    } else if (zone === FOCUS_ZONES.SIMILAR || zone === FOCUS_ZONES.RECS) {
+      focusedNode = document.getElementById(`detail-card-${zone}-${col}`);
     }
-
-    /**
-     * Set focus on an element
-     * @param {HTMLElement} element 
-     * @param {boolean} saveHistory - Whether to save to focus history
-     */
-    setFocus(element, saveHistory = true) {
-        if (!element) return;
-
-        // Remove focus from current element
-        if (this.currentFocus) {
-            this.currentFocus.classList.remove(this.focusClasses.focused);
-            this.currentFocus.blur();
-        }
-
-        // Set focus on new element
-        this.currentFocus = element;
-        element.classList.add(this.focusClasses.focused);
-        element.focus();
-
-        // Scroll element into view if needed
-        this.scrollIntoView(element);
-
-        // Save to history
-        if (saveHistory) {
-            this.focusHistory.push(element);
-            if (this.focusHistory.length > 50) {
-                this.focusHistory.shift();
-            }
-        }
-
-        // Dispatch focus event
-        element.dispatchEvent(new CustomEvent('tvfocus', { 
-            detail: { element, previous: this.currentFocus } 
-        }));
+  } else if (APP.screen === SCREENS.SEARCH) {
+    if (zone === FOCUS_ZONES.TABBAR) {
+      const items = document.querySelectorAll('#nav-tabs .tab-item');
+      focusedNode = items[col];
+    } else if (zone === FOCUS_ZONES.KEYBOARD) {
+      focusedNode = document.getElementById(`search-keyboard-grid-key-${row}-${col}`);
+    } else if (zone === FOCUS_ZONES.RESULTS) {
+      const idx = row * 4 + col;
+      focusedNode = document.getElementById(`search-card-${idx}`);
     }
-
-    /**
-     * Get currently focused element
-     * @returns {HTMLElement|null}
-     */
-    getCurrentFocus() {
-        return this.currentFocus;
+  } else if (APP.screen === SCREENS.SETTINGS_KEYBOARD) {
+    if (zone === FOCUS_ZONES.KEYBOARD) {
+      focusedNode = document.getElementById(`setup-keyboard-grid-key-${row}-${col}`);
     }
-
-    /**
-     * Move focus to previous element in history
-     */
-    focusPrevious() {
-        if (this.focusHistory.length > 1) {
-            this.focusHistory.pop(); // Remove current
-            const previous = this.focusHistory.pop();
-            if (previous && document.contains(previous)) {
-                this.setFocus(previous, false);
-            }
-        }
+  } else if (APP.screen === SCREENS.SETTINGS) {
+    if (zone === FOCUS_ZONES.TABBAR) {
+      const items = document.querySelectorAll('#nav-tabs .tab-item');
+      focusedNode = items[col];
+    } else if (zone === FOCUS_ZONES.OPTIONS) {
+      const items = document.querySelectorAll('#subtitle-opt-row .settings-opt-card');
+      focusedNode = items[col];
+    } else if (zone === FOCUS_ZONES.BUTTONS) {
+      const btns = document.querySelectorAll('#settings-view .settings-btn-row button');
+      focusedNode = btns[col];
     }
-
-    /**
-     * Scroll element into view with TV-safe margins
-     * @param {HTMLElement} element 
-     */
-    scrollIntoView(element) {
-        const rect = element.getBoundingClientRect();
-        const margin = CONFIG.NAVIGATION.OVERSCAN_MARGIN;
-
-        const viewportHeight = window.innerHeight;
-        const viewportWidth = window.innerWidth;
-
-        // Check if element is outside viewport
-        const isAbove = rect.top < margin;
-        const isBelow = rect.bottom > viewportHeight - margin;
-        const isLeft = rect.left < margin;
-        const isRight = rect.right > viewportWidth - margin;
-
-        if (isAbove || isBelow) {
-            element.scrollIntoView({
-                behavior: 'smooth',
-                block: isAbove ? 'start' : 'end'
-            });
-        }
-
-        if (isLeft || isRight) {
-            element.scrollIntoView({
-                behavior: 'smooth',
-                inline: isLeft ? 'start' : 'end'
-            });
-        }
+  } else if (APP.screen === SCREENS.GENRE) {
+    if (zone === FOCUS_ZONES.GRID) {
+      const idx = row * 6 + col;
+      focusedNode = document.getElementById(`genre-card-${idx}`);
     }
-
-    /**
-     * Find the nearest focusable element in a direction
-     * @param {HTMLElement} fromElement 
-     * @param {string} direction - 'up', 'down', 'left', 'right'
-     * @returns {HTMLElement|null}
-     */
-    findNearestFocusable(fromElement, direction) {
-        const focusables = Array.from(document.querySelectorAll('.focusable'));
-        const fromRect = fromElement.getBoundingClientRect();
-        const fromCenter = {
-            x: fromRect.left + fromRect.width / 2,
-            y: fromRect.top + fromRect.height / 2
-        };
-
-        let nearest = null;
-        let minDistance = Infinity;
-
-        focusables.forEach(element => {
-            if (element === fromElement) return;
-            if (!this.isVisible(element)) return;
-
-            const rect = element.getBoundingClientRect();
-            const center = {
-                x: rect.left + rect.width / 2,
-                y: rect.top + rect.height / 2
-            };
-
-            // Check if element is in the correct direction
-            const isInDirection = this.isInDirection(fromCenter, center, direction);
-            if (!isInDirection) return;
-
-            const distance = this.calculateDistance(fromCenter, center);
-            if (distance < minDistance) {
-                minDistance = distance;
-                nearest = element;
-            }
-        });
-
-        return nearest;
+  } else if (APP.screen === SCREENS.WATCHLIST) {
+    if (zone === FOCUS_ZONES.TABBAR) {
+      const items = document.querySelectorAll('#nav-tabs .tab-item');
+      focusedNode = items[col];
+    } else if (zone === FOCUS_ZONES.GRID) {
+      const idx = row * 6 + col;
+      focusedNode = document.getElementById(`watchlist-card-${idx}`);
     }
+  }
 
-    /**
-     * Check if point2 is in the specified direction from point1
-     */
-    isInDirection(from, to, direction) {
-        const dx = to.x - from.x;
-        const dy = to.y - from.y;
-
-        switch (direction) {
-            case 'left': return dx < 0 && Math.abs(dx) > Math.abs(dy) * 0.5;
-            case 'right': return dx > 0 && Math.abs(dx) > Math.abs(dy) * 0.5;
-            case 'up': return dy < 0 && Math.abs(dy) > Math.abs(dx) * 0.5;
-            case 'down': return dy > 0 && Math.abs(dy) > Math.abs(dx) * 0.5;
-            default: return false;
-        }
-    }
-
-    /**
-     * Calculate Euclidean distance between two points
-     */
-    calculateDistance(p1, p2) {
-        return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-    }
-
-    /**
-     * Check if element is visible
-     * @param {HTMLElement} element 
-     * @returns {boolean}
-     */
-    isVisible(element) {
-        const style = window.getComputedStyle(element);
-        return style.display !== 'none' && 
-               style.visibility !== 'hidden' && 
-               style.opacity !== '0';
-    }
-
-    /**
-     * Clear focus history
-     */
-    clearHistory() {
-        this.focusHistory = [];
-    }
+  if (focusedNode) {
+    focusedNode.classList.add('focused');
+    focusedNode.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'nearest'
+    });
+  }
 }
 
-const focusManager = new FocusManager();
+function positionHorizontalRow(rowIndex, cardColIndex) {
+  const wrapper = document.getElementById(`row-wrapper-${rowIndex}`);
+  if (!wrapper) return;
+  const cardWidth = 180;
+  const containerWidth = wrapper.parentElement.clientWidth;
+  const visible = Math.floor(containerWidth / cardWidth);
+
+  let offset = 0;
+  if (cardColIndex >= visible - 1) {
+    offset = (cardColIndex - visible + 2) * cardWidth;
+  }
+  wrapper.style.transform = `translateX(-${offset}px)`;
+}
+
+function positionHorizontalRelatedRow(zone, colIndex) {
+  const wrapper = document.getElementById(`detail-row-wrapper-${zone}`);
+  if (!wrapper) return;
+  const cardWidth = 180;
+  const containerWidth = wrapper.parentElement.clientWidth;
+  const visible = Math.floor(containerWidth / cardWidth);
+
+  let offset = 0;
+  if (colIndex >= visible - 1) {
+    offset = (colIndex - visible + 2) * cardWidth;
+  }
+  wrapper.style.transform = `translateX(-${offset}px)`;
+}
+
+function alignVerticalScroll() {
+  if (APP.screen !== SCREENS.HOME) return;
+  const rowNode = document.getElementById(`row-sec-${APP.focusedRow}`);
+  if (!rowNode) return;
+  const main = document.getElementById('main-content');
+
+  if (APP.focusZone === FOCUS_ZONES.TABBAR || APP.focusZone === FOCUS_ZONES.HERO) {
+    main.scrollTop = 0;
+    return;
+  }
+
+  const rect = rowNode.getBoundingClientRect();
+  const parentRect = main.getBoundingClientRect();
+  const scrollTop = rowNode.offsetTop - (parentRect.height / 2) + (rect.height / 2);
+  main.scrollTo({
+    top: Math.max(0, scrollTop),
+    behavior: 'smooth'
+  });
+}

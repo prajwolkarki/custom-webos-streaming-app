@@ -1,92 +1,80 @@
-/**
- * CSS Variables
- * Design tokens for the application
- */
-
 :root {
-    /* Colors */
-    --color-primary: #e50914;
-    --color-primary-dark: #b20710;
-    --color-primary-light: #ff1f2a;
+  --bg-color: #080808;
+  --primary-accent: #00c8ff;
+  --secondary-accent: #ff3d5a;
+  --gold-color: #f5c518;
+  --text-primary: #ffffff;
+  --text-secondary: #999999;
+  --text-muted: #555555;
 
-    --color-background: #141414;
-    --color-background-dark: #0a0a0a;
-    --color-background-light: #1f1f1f;
-    --color-background-card: #2a2a2a;
+  --card-width: 160px;
+  --card-height: 240px;
+  --card-gap: 20px;
+  --card-focus-glow: 0 0 0 3px var(--primary-accent), 0 0 30px rgba(0, 200, 255, 0.6);
 
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #b3b3b3;
-    --color-text-muted: #737373;
+  --safe-padding-x: 5%;
+  --safe-padding-y: 4%;
 
-    --color-border: #333333;
-    --color-border-focus: #e50914;
-
-    --color-success: #46d369;
-    --color-warning: #e6b800;
-    --color-error: #e50914;
-
-    /* Typography */
-    --font-family-primary: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --font-family-secondary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-    --font-size-xs: 16px;
-    --font-size-sm: 20px;
-    --font-size-md: 24px;
-    --font-size-lg: 32px;
-    --font-size-xl: 48px;
-    --font-size-2xl: 64px;
-
-    --font-weight-normal: 400;
-    --font-weight-medium: 500;
-    --font-weight-bold: 700;
-
-    --line-height-tight: 1.2;
-    --line-height-normal: 1.5;
-    --line-height-relaxed: 1.75;
-
-    /* Spacing */
-    --space-xs: 8px;
-    --space-sm: 16px;
-    --space-md: 24px;
-    --space-lg: 32px;
-    --space-xl: 48px;
-    --space-2xl: 64px;
-
-    /* Border Radius */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-full: 9999px;
-
-    /* Shadows */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
-    --shadow-focus: 0 0 0 4px rgba(229, 9, 20, 0.5);
-
-    /* Transitions */
-    --transition-fast: 150ms ease;
-    --transition-normal: 300ms ease;
-    --transition-slow: 500ms ease;
-
-    /* Z-Index Layers */
-    --z-background: -1;
-    --z-content: 1;
-    --z-header: 100;
-    --z-overlay: 200;
-    --z-modal: 300;
-    --z-toast: 400;
-    --z-loading: 500;
-
-    /* TV Specific */
-    --tv-overscan-top: 60px;
-    --tv-overscan-bottom: 60px;
-    --tv-overscan-left: 60px;
-    --tv-overscan-right: 60px;
-    --tv-safe-area: 60px;
-
-    /* Focus Ring */
-    --focus-ring-width: 4px;
-    --focus-ring-color: var(--color-primary);
-    --focus-ring-offset: 4px;
+  --color-primary: var(--primary-accent);
+  --color-primary-dark: #0099cc;
+  --color-primary-light: #33d4ff;
+  --color-background: var(--bg-color);
+  --color-background-dark: #050505;
+  --color-background-light: #111111;
+  --color-background-card: #1a1a1a;
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-border: #333333;
+  --color-border-focus: var(--primary-accent);
+  --color-success: #46d369;
+  --color-warning: #e6b800;
+  --color-error: var(--secondary-accent);
+  --font-family-primary: 'DM Sans', sans-serif;
+  --font-family-secondary: 'Barlow Condensed', sans-serif;
+  --font-family-display: 'Bebas Neue', sans-serif;
+  --font-size-xs: 14px;
+  --font-size-sm: 16px;
+  --font-size-md: 20px;
+  --font-size-lg: 28px;
+  --font-size-xl: 38px;
+  --font-size-2xl: 54px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --line-height-tight: 1.1;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  --space-2xl: 64px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.8);
+  --shadow-focus: var(--card-focus-glow);
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  --z-background: -1;
+  --z-content: 1;
+  --z-header: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+  --z-loading: 500;
+  --tv-overscan-top: 60px;
+  --tv-overscan-bottom: 60px;
+  --tv-overscan-left: 60px;
+  --tv-overscan-right: 60px;
+  --tv-safe-area: 60px;
+  --focus-ring-width: 3px;
+  --focus-ring-color: var(--primary-accent);
+  --focus-ring-offset: 3px;
 }

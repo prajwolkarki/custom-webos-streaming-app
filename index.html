@@ -1,34 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VidSrc Stream</title>
-    <link rel="stylesheet" href="src/styles/variables.css">
-    <link rel="stylesheet" href="src/styles/global.css">
-    <link rel="stylesheet" href="src/styles/focus.css">
-    <link rel="stylesheet" href="src/styles/tv-optimizations.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineStream - Premium WebOS Streaming</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="src/styles/variables.css">
+  <link rel="stylesheet" href="src/styles/global.css">
+  <link rel="stylesheet" href="src/styles/focus.css">
+  <link rel="stylesheet" href="src/styles/tv-optimizations.css">
 </head>
+
 <body>
-    <div id="app">
-        <header id="app-header"></header>
-        <main id="app-main"></main>
-        <div id="loading-overlay" class="hidden">
-            <div class="spinner"></div>
+  <div id="loading-screen" class="loading-screen">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loading-text">CINESTREAM</div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <div id="setup-screen" class="setup-screen hidden">
+    <div class="setup-card">
+      <div class="setup-info-panel">
+        <div class="setup-logo">CINE<span>STREAM</span></div>
+        <div class="setup-desc">
+          Welcome to CineStream! To discover movies, tv shows, and load details, a <strong>TMDB API Key</strong> is
+          required.
+          <br><br>
+          You can get a free API key in seconds by signing up at:<br>
+          <a href="https://www.themoviedb.org/settings/api" target="_blank"
+            style="color: var(--primary-accent); text-decoration: underline;">themoviedb.org/settings/api</a>
         </div>
+        <div class="section-label">Enter TMDB API Key:</div>
+        <div id="setup-input-display" class="setup-input-display placeholder">Enter key using keyboard...</div>
+        <div style="font-family: Barlow Condensed; font-size: 16px; color: var(--text-secondary);">
+          Tip: You can use your PC keyboard as well if testing on a computer.
+        </div>
+      </div>
+      <div class="setup-keyboard-panel">
+        <div class="keyboard-grid" id="setup-keyboard-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="app" class="app-container">
+    <header class="app-header">
+      <div class="logo">CINE<span>STREAM</span></div>
+      <nav class="nav-tabs" id="nav-tabs">
+        <div class="tab-item focusable" data-tab="movies" id="tab-movies">MOVIES</div>
+        <div class="tab-item focusable" data-tab="tv" id="tab-tv">TV SHOWS</div>
+        <div class="tab-item focusable" data-tab="search" id="tab-search">🔍 SEARCH</div>
+        <div class="tab-item focusable" data-tab="watchlist" id="tab-watchlist">♥ WATCHLIST</div>
+        <div class="tab-item focusable" data-tab="settings" id="tab-settings">⚙ SETTINGS</div>
+      </nav>
+    </header>
+
+    <main class="main-content" id="main-content">
+      <div id="home-view" class="view-section">
+        <section id="hero-banner" class="hero-banner">
+          <div class="hero-background" id="hero-bg"></div>
+          <div class="hero-gradient"></div>
+          <div class="hero-content">
+            <h1 class="hero-title" id="hero-title">Loading Featured Content...</h1>
+            <p class="hero-tagline" id="hero-tagline"></p>
+            <div class="hero-meta">
+              <span class="hero-rating" id="hero-rating">★ 0.0</span>
+              <span class="hero-year" id="hero-year">----</span>
+              <div class="hero-genres" id="hero-genres"></div>
+            </div>
+            <div class="hero-buttons" id="hero-buttons">
+              <button class="hero-btn play focusable" id="hero-play-btn" data-btn-index="0">▶ PLAY NOW</button>
+              <button class="hero-btn info focusable" id="hero-info-btn" data-btn-index="1">ℹ MORE INFO</button>
+            </div>
+          </div>
+          <div class="hero-indicators" id="hero-indicators"></div>
+        </section>
+        <section id="rows-container" class="rows-container"></section>
+      </div>
+
+      <div id="search-view" class="view-section hidden">
+        <div class="search-container">
+          <div class="keyboard-panel">
+            <div class="search-input-box" id="search-input-box">
+              <span class="search-input-text placeholder" id="search-input-text">Type to search...</span>
+              <span class="search-input-clear" style="font-size: 18px; color: var(--text-muted);">ENTER [CLEAR] to clear</span>
+            </div>
+            <div class="keyboard-grid" id="search-keyboard-grid"></div>
+          </div>
+          <div class="results-panel">
+            <h2 class="results-title" id="results-title">Search Results</h2>
+            <div class="results-grid-container" id="search-results-container">
+              <div class="grid-layout" id="search-results-grid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="watchlist-view" class="view-section hidden">
+        <div class="view-grid-wrap">
+          <h2 class="view-grid-title">♥ Your Watchlist</h2>
+          <div class="grid-layout" id="watchlist-grid"></div>
+        </div>
+      </div>
+
+      <div id="settings-view" class="view-section hidden">
+        <div class="settings-panel">
+          <h2 class="view-grid-title">⚙ CineStream Settings</h2>
+          <div class="settings-section">
+            <h3 class="settings-title">Subtitle Preference (VidSrc Parameter)</h3>
+            <div class="settings-options-row" id="subtitle-opt-row">
+              <div class="settings-opt-card focusable" data-lang="" id="sub-opt-none">None</div>
+              <div class="settings-opt-card focusable" data-lang="en" id="sub-opt-en">English</div>
+              <div class="settings-opt-card focusable" data-lang="es" id="sub-opt-es">Spanish</div>
+              <div class="settings-opt-card focusable" data-lang="de" id="sub-opt-de">German</div>
+              <div class="settings-opt-card focusable" data-lang="fr" id="sub-opt-fr">French</div>
+              <div class="settings-opt-card focusable" data-lang="it" id="sub-opt-it">Italian</div>
+            </div>
+          </div>
+          <div class="settings-section">
+            <h3 class="settings-title">Application Actions</h3>
+            <div class="settings-btn-row">
+              <button class="detail-btn watchlist focusable" id="settings-btn-changekey">Update TMDB API Key</button>
+              <button class="detail-btn trailer focusable" id="settings-btn-clear">Clear App Cache</button>
+            </div>
+          </div>
+          <div
+            style="font-family: DM Sans; font-size: 18px; color: var(--text-secondary); margin-top: 40px; border-top: 1px solid #222; padding-top: 20px;">
+            CineStream WebOS Application v1.0.0
+            <br>
+            Optimized for LG TV D-pad Remote controls. Back key triggers exit or go-back. Red shortcut launches Search.
+            Green shortcut toggles movies/tv filter.
+          </div>
+        </div>
+      </div>
+
+      <div id="genre-view" class="view-section hidden">
+        <div class="view-grid-wrap">
+          <h2 class="view-grid-title" id="genre-grid-title">Genre</h2>
+          <div class="grid-layout" id="genre-grid"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="detail-screen" class="detail-screen hidden">
+    <div
+      style="margin-bottom: 20px; font-family: Barlow Condensed; font-size: 18px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px;">
+      <span style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px;">BACK</span> Returns to browse
     </div>
 
-    <!-- Core Scripts -->
-    <script src="src/utils/constants.js"></script>
-    <script src="src/utils/helpers.js"></script>
-    <script src="src/utils/storage.js"></script>
-    <script src="src/utils/urlBuilder.js"></script>
-    <script src="src/config/config.js"></script>
-    <script src="src/api/request.js"></script>
-    <script src="src/api/vidsrcApi.js"></script>
-    <script src="src/navigation/keyHandler.js"></script>
-    <script src="src/navigation/focusManager.js"></script>
-    <script src="src/navigation/spatialNavigation.js"></script>
-    <script src="src/app.js"></script>
+    <div class="detail-container">
+      <div class="detail-poster-wrap">
+        <img class="detail-poster" id="detail-poster" src="" alt="Poster">
+      </div>
+      <div class="detail-info">
+        <h1 class="detail-title" id="detail-title">Title</h1>
+        <p class="detail-tagline" id="detail-tagline"></p>
+        <div class="detail-meta-row" id="detail-meta-row"></div>
+        <p class="detail-overview" id="detail-overview"></p>
+
+        <div class="detail-actions-row" id="detail-actions-row">
+          <button class="detail-btn play focusable" id="detail-play-btn" data-btn-idx="0">▶ PLAY NOW</button>
+          <button class="detail-btn watchlist focusable" id="detail-watchlist-btn" data-btn-idx="1">+ WATCHLIST</button>
+          <button class="detail-btn trailer focusable" id="detail-trailer-btn" data-btn-idx="2">🔊 TRAILER</button>
+        </div>
+
+        <div class="cast-section" id="cast-section">
+          <div class="section-label">Top Cast</div>
+          <div class="cast-chips-wrapper" id="cast-chips-wrapper"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tv-picker-section hidden" id="tv-picker-section">
+      <div class="section-label">Episodes</div>
+      <div class="season-tabs" id="season-tabs"></div>
+      <div class="episodes-grid" id="episodes-grid"></div>
+    </div>
+
+    <div class="detail-rows-container" id="detail-rows-container"></div>
+  </div>
+
+  <div id="player-screen" class="player-screen hidden">
+    <iframe class="player-iframe" id="player-iframe" allowfullscreen
+      allow="autoplay; encrypted-media; fullscreen"></iframe>
+    <div class="player-hud" id="player-hud">
+      <button class="player-back-btn">← BACK TO INFO</button>
+      <div class="player-title-info">
+        <h2 class="player-main-title" id="player-hud-title">Loading Stream...</h2>
+        <p class="player-sub-title" id="player-hud-subtitle">Please wait...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="src/config/config.js"></script>
+  <script src="src/utils/constants.js"></script>
+  <script src="src/utils/helpers.js"></script>
+  <script src="src/utils/storage.js"></script>
+  <script src="src/utils/urlBuilder.js"></script>
+  <script src="src/api/request.js"></script>
+  <script src="src/api/vidsrcApi.js"></script>
+  <script src="src/navigation/keyHandler.js"></script>
+  <script src="src/navigation/focusManager.js"></script>
+  <script src="src/navigation/spatialNavigation.js"></script>
+  <script src="src/app.js"></script>
 </body>
+
 </html>

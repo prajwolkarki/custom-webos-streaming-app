@@ -5,7 +5,9 @@
   "main": "index.html",
   "scripts": {
     "build": "echo 'Build script placeholder'",
-    "test": "echo 'Test script placeholder'"
+    "test": "echo 'Test script placeholder'",
+    "lint": "eslint --config eslint.config.mjs src/",
+    "typecheck": "tsc -p jsconfig.json --noEmit"
   },
   "keywords": [
     "webos",
@@ -14,5 +16,11 @@
     "vidsrc"
   ],
   "author": "Your Name",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.4.1",
+    "globals": "^17.6.0",
+    "typescript": "^6.0.3"
+  }
 }
