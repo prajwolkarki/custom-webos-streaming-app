@@ -1,0 +1,15 @@
+{
+  "id": "com.prajwol.vidsrcstream",
+  "version": "1.0.0",
+  "vendor": "Prajwol",
+  "type": "web",
+  "main": "index.html",
+  "title": "VidSrc Stream",
+  "icon": "assets/icons/icon.png",
+  "largeIcon": "assets/icons/largeIcon.png",
+  "bgImage": "assets/images/backgrounds/splash.png",
+  "splashBackground": "assets/images/backgrounds/splash.png",
+  "transparent": false,
+  "resolution": "1920x1080",
+  "supportPortraitMode": false
+}

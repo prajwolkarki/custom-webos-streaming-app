@@ -1,0 +1,140 @@
+/**
+ * Focus Styles
+ * Visual indicators for TV remote navigation
+ */
+
+/* Base Focusable */
+.focusable {
+    position: relative;
+    transition: transform var(--transition-fast), 
+                box-shadow var(--transition-fast),
+                outline var(--transition-fast);
+    outline: none;
+}
+
+/* Focused State */
+.focusable.focused {
+    transform: scale(1.05);
+    z-index: 10;
+    box-shadow: var(--shadow-focus);
+}
+
+.focusable.focused::after {
+    content: '';
+    position: absolute;
+    top: calc(-1 * var(--focus-ring-offset));
+    left: calc(-1 * var(--focus-ring-offset));
+    right: calc(-1 * var(--focus-ring-offset));
+    bottom: calc(-1 * var(--focus-ring-offset));
+    border: var(--focus-ring-width) solid var(--focus-ring-color);
+    border-radius: calc(var(--radius-md) + var(--focus-ring-offset));
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Poster Card Focus */
+.poster-card.focused {
+    transform: scale(1.08);
+}
+
+.poster-card.focused .poster-image img {
+    filter: brightness(1.1);
+}
+
+.poster-card.focused .poster-title {
+    color: var(--color-primary);
+}
+
+/* Movie/TV Card Focus */
+.movie-card.focused,
+.tvshow-card.focused {
+    transform: scale(1.05);
+}
+
+.movie-card.focused img,
+.tvshow-card.focused img {
+    filter: brightness(1.1);
+}
+
+/* Episode Card Focus */
+.episode-card.focused {
+    background: var(--color-background-light);
+    border-left: 4px solid var(--color-primary);
+}
+
+/* Button Focus */
+button.focusable.focused {
+    background: var(--color-primary);
+    transform: scale(1.05);
+}
+
+/* Input Focus */
+input.focusable.focused {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.3);
+}
+
+/* Season Card Focus */
+.season-card.focused {
+    background: var(--color-primary);
+    color: white;
+}
+
+/* Control Button Focus */
+.control-btn.focused {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+/* Action Button Focus */
+.action-btn.focused {
+    background: var(--color-primary);
+    transform: scale(1.05);
+}
+
+/* Search Bar Focus */
+.search-bar .focusable.focused {
+    border-color: var(--color-primary);
+}
+
+/* Content Row Focus */
+.content-row .focusable.focused {
+    z-index: 20;
+}
+
+/* Grid Item Focus */
+.grid-item.focusable.focused {
+    transform: scale(1.08);
+    z-index: 10;
+}
+
+/* Navigation Item Focus */
+.nav-item.focusable.focused {
+    color: var(--color-primary);
+}
+
+.nav-item.focusable.focused::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--color-primary);
+    border-radius: var(--radius-full);
+}
+
+/* Smooth scroll behavior for focused elements */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Prevent focus outline on mouse click (keep for keyboard) */
+.focusable:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+}
+
+.focusable:focus-visible {
+    outline: none;
+}
