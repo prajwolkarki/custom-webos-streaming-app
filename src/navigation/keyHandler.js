@@ -1,7 +1,7 @@
 function handleGlobalKeydown(e) {
   const code = e.keyCode;
   const now = Date.now();
-  if (now - lastKeyPressTime < 50) {
+  if (now - lastKeyPressTime < 120) {
     e.preventDefault();
     return;
   }

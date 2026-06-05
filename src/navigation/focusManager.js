@@ -1,6 +1,51 @@
 let _lastFocusedNode = null;
 let _tabItemsCache = null;
 
+// Layout dimension and offset caches to prevent reflow layout thrashing on TV
+let _cachedViewportWidth = 0;
+let _cachedMainHeight = 0;
+let _cachedRowHeight = 0;
+const _rowOffsetCache = {};
+
+function clearLayoutCaches() {
+  _cachedViewportWidth = 0;
+  _cachedMainHeight = 0;
+  _cachedRowHeight = 0;
+  // Clear the row offset cache keys
+  for (const key in _rowOffsetCache) {
+    delete _rowOffsetCache[key];
+  }
+  _tabItemsCache = null;
+}
+
+function getViewportWidth(wrapper) {
+  if (!_cachedViewportWidth && wrapper && wrapper.parentElement) {
+    _cachedViewportWidth = wrapper.parentElement.clientWidth || 1728;
+  }
+  return _cachedViewportWidth || 1728;
+}
+
+function getMainHeight(mainNode) {
+  if (!_cachedMainHeight && mainNode) {
+    _cachedMainHeight = mainNode.clientHeight || 980;
+  }
+  return _cachedMainHeight || 980;
+}
+
+function getRowHeight(rowNode) {
+  if (!_cachedRowHeight && rowNode) {
+    _cachedRowHeight = rowNode.clientHeight || 344;
+  }
+  return _cachedRowHeight || 344;
+}
+
+function getRowOffsetTop(rowIndex, rowNode) {
+  if (_rowOffsetCache[rowIndex] === undefined && rowNode) {
+    _rowOffsetCache[rowIndex] = rowNode.offsetTop;
+  }
+  return _rowOffsetCache[rowIndex] || 0;
+}
+
 function getTabItems() {
   if (!_tabItemsCache) {
     _tabItemsCache = document.querySelectorAll('#nav-tabs .tab-item');
@@ -101,28 +146,28 @@ function positionHorizontalRow(rowIndex, cardColIndex) {
   const wrapper = document.getElementById(`row-wrapper-${rowIndex}`);
   if (!wrapper) return;
   const cardWidth = 180;
-  const containerWidth = wrapper.parentElement.clientWidth;
+  const containerWidth = getViewportWidth(wrapper);
   const visible = Math.floor(containerWidth / cardWidth);
 
   let offset = 0;
   if (cardColIndex >= visible - 1) {
     offset = (cardColIndex - visible + 2) * cardWidth;
   }
-  wrapper.style.transform = `translateX(-${offset}px)`;
+  wrapper.style.transform = `translate3d(-${offset}px, 0, 0)`;
 }
 
 function positionHorizontalRelatedRow(zone, colIndex) {
   const wrapper = document.getElementById(`detail-row-wrapper-${zone}`);
   if (!wrapper) return;
   const cardWidth = 180;
-  const containerWidth = wrapper.parentElement.clientWidth;
+  const containerWidth = getViewportWidth(wrapper);
   const visible = Math.floor(containerWidth / cardWidth);
 
   let offset = 0;
   if (colIndex >= visible - 1) {
     offset = (colIndex - visible + 2) * cardWidth;
   }
-  wrapper.style.transform = `translateX(-${offset}px)`;
+  wrapper.style.transform = `translate3d(-${offset}px, 0, 0)`;
 }
 
 function alignVerticalScroll() {
@@ -136,8 +181,10 @@ function alignVerticalScroll() {
     return;
   }
 
-  const rect = rowNode.getBoundingClientRect();
-  const parentRect = main.getBoundingClientRect();
-  const scrollTop = rowNode.offsetTop - (parentRect.height / 2) + (rect.height / 2);
+  const rowTop = getRowOffsetTop(APP.focusedRow, rowNode);
+  const rowHeight = getRowHeight(rowNode);
+  const mainHeight = getMainHeight(main);
+
+  const scrollTop = rowTop - (mainHeight / 2) + (rowHeight / 2);
   main.scrollTop = Math.max(0, scrollTop);
 }

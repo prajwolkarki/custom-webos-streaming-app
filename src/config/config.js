@@ -9,7 +9,7 @@ const CONFIG = {
   },
   TMDB: {
     BASE_URL: 'https://api.themoviedb.org/3',
-    API_KEY: 'yourapikey',
+    API_KEY: '2668df122d5919267bedb70261c67a5e',
     IMAGE_BASE: 'https://image.tmdb.org/t/p/w500',
     BACKDROP_BASE: 'https://image.tmdb.org/t/p/original',
     POSTER_SIZE: 'w500'

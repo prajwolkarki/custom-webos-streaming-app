@@ -1,16 +1,4 @@
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.035;
-  pointer-events: none;
-  z-index: 9999;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-}
-
+/* TV-specific Scrollbar and User Select Resets */
 ::-webkit-scrollbar {
   display: none;
   width: 0;
@@ -27,3 +15,50 @@ body {
   user-select: none;
   overflow: hidden;
 }
+
+/* Enforce hardware-friendly scrolling without animated transitions */
+html, body, .main-content, .detail-screen, .season-tabs, .results-grid-container {
+  scroll-behavior: auto !important;
+}
+
+/* Disable GPU-heavy backdrop-filters on Details screen overlay */
+.detail-screen {
+  backdrop-filter: none !important;
+  background-color: #080808 !important;
+}
+
+/* Restrict focus animations to transform only to avoid repainting layout/filters */
+.focusable {
+  transition: transform 0.1s ease !important;
+  box-shadow: none !important;
+}
+
+/* Disable heavy blurred box-shadow glows which lag TV GPU rendering */
+.card.focused,
+.hero-btn.focused,
+.detail-btn.focused,
+.cast-chip.focused,
+.season-tab.focused,
+.episode-card.focused,
+.keyboard-key.focused,
+.settings-opt-card.focused {
+  box-shadow: none !important;
+}
+
+/* Simplify the focus outline to be a crisp high-contrast border without shadow effects */
+.focusable.focused::after {
+  border: 3px solid var(--primary-accent) !important;
+  box-shadow: none !important;
+  border-radius: calc(var(--radius-md) + var(--focus-ring-offset)) !important;
+}
+
+/* Disable continuous panning/scaling backdrop animation in the Hero banner */
+.hero-background {
+  transition: opacity 0.5s ease !important;
+  transform: none !important;
+}
+.hero-background.active {
+  opacity: 0.65 !important;
+  transform: none !important;
+}
+

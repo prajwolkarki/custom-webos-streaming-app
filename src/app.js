@@ -16,8 +16,9 @@ const APP = {
   watchlist: [],
   tmdbApiKey: '2668df122d5919267bedb70261c67a5e',
   tmdbBaseUrl: 'https://api.themoviedb.org/3',
-  tmdbImageBase: 'https://image.tmdb.org/t/p/w500',
-  tmdbBackdropBase: 'https://image.tmdb.org/t/p/original',
+  tmdbImageBase: 'https://image.tmdb.org/t/p/w185',
+  tmdbPosterBase: 'https://image.tmdb.org/t/p/w342',
+  tmdbBackdropBase: 'https://image.tmdb.org/t/p/w780',
   vidsrcEmbedBase: 'https://vsembed.ru/embed',
   subtitleLang: '',
   heroItems: [],
@@ -89,6 +90,7 @@ function showLoading(show, text = 'CINESTREAM') {
 }
 
 async function switchTab(tab) {
+  if (typeof clearLayoutCaches === 'function') clearLayoutCaches();
   APP.activeTab = tab;
 
   document.querySelectorAll('.tab-item').forEach(item => {
@@ -338,7 +340,7 @@ function renderDetailScreenContent() {
   const overview = document.getElementById('detail-overview');
 
   if (detail.poster_path) {
-    poster.src = `${APP.tmdbImageBase}${detail.poster_path}`;
+    poster.src = `${APP.tmdbPosterBase}${detail.poster_path}`;
     poster.classList.remove('hidden');
   } else {
     poster.src = '';
@@ -384,7 +386,7 @@ function renderDetailScreenContent() {
 
       let avatarHtml;
       if (actor.profile_path) {
-        avatarHtml = `<img class="cast-avatar" src="https://image.tmdb.org/t/p/w185${actor.profile_path}" alt="${actor.name}">`;
+        avatarHtml = `<img class="cast-avatar" data-src="https://image.tmdb.org/t/p/w185${actor.profile_path}" src="" alt="${actor.name}">`;
       } else {
         const initials = actor.name.split(' ').map(n => n[0]).join('').slice(0, 2);
         avatarHtml = `<div class="cast-avatar-fallback">${initials}</div>`;
@@ -398,6 +400,9 @@ function renderDetailScreenContent() {
         </div>
       `;
       castWrapper.appendChild(chip);
+    });
+    castWrapper.querySelectorAll('.cast-avatar').forEach(img => {
+      imageObserver.observe(img);
     });
   } else {
     document.getElementById('cast-section').classList.add('hidden');
@@ -675,6 +680,7 @@ function goBack() {
 }
 
 function updateScreenVisibility() {
+  if (typeof clearLayoutCaches === 'function') clearLayoutCaches();
   const views = {
     'home': document.getElementById('home-view'),
     'search': document.getElementById('search-view'),
