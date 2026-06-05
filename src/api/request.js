@@ -12,7 +12,7 @@ async function apiFetch(url) {
     return await response.text();
   } catch (error) {
     clearTimeout(timeoutId);
-    if (error.name === 'AbortError') throw new Error('Request timeout');
+    if (error.name === 'AbortError') throw new Error('Request timeout', { cause: error });
     throw error;
   }
 }

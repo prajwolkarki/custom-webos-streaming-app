@@ -34,9 +34,7 @@ function getCardFallbackHtml(title) {
 
 function createMetaPill(html) {
   const pill = document.createElement('div');
-  pill.className = 'genre-pill';
-  pill.style.fontSize = '18px';
-  pill.style.background = 'rgba(255,255,255,0.08)';
+  pill.className = 'genre-pill meta-pill';
   pill.innerHTML = html;
   return pill;
 }

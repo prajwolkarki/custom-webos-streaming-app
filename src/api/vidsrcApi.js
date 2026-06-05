@@ -12,7 +12,7 @@ async function loadRowItems(row, rowIndex, append = false) {
     return;
   }
 
-  let items = [];
+  let items;
   try {
     if (row.isVidSrc) {
       const res = await fetch(row.endpoint.replace('{PAGE}', row.page));

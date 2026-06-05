@@ -383,24 +383,27 @@ function triggerSettingsEnterAction() {
 function navigateSettingsKeyboard(code) {
   switch (code) {
     case KEY_CODES.LEFT: APP.focusedCol = Math.max(0, APP.focusedCol - 1); break;
-    case KEY_CODES.RIGHT:
+    case KEY_CODES.RIGHT: {
       const rowKeys = KEYBOARD_LAYOUT[APP.focusedRow];
       APP.focusedCol = Math.min(rowKeys.length - 1, APP.focusedCol + 1);
       break;
-    case KEY_CODES.UP:
+    }
+    case KEY_CODES.UP: {
       if (APP.focusedRow > 0) {
         APP.focusedRow -= 1;
         const upRowKeys = KEYBOARD_LAYOUT[APP.focusedRow];
         APP.focusedCol = Math.min(upRowKeys.length - 1, APP.focusedCol);
       }
       break;
-    case KEY_CODES.DOWN:
+    }
+    case KEY_CODES.DOWN: {
       if (APP.focusedRow < 4) {
         APP.focusedRow += 1;
         const downRowKeys = KEYBOARD_LAYOUT[APP.focusedRow];
         APP.focusedCol = Math.min(downRowKeys.length - 1, APP.focusedCol);
       }
       break;
+    }
     case KEY_CODES.OK:
       triggerSettingsKeyboardEnterAction();
       return;
@@ -451,15 +454,16 @@ function navigateGenreGrid(code) {
     case KEY_CODES.LEFT:
       if (APP.focusedCol > 0) APP.focusedCol -= 1;
       break;
-    case KEY_CODES.RIGHT:
+    case KEY_CODES.RIGHT: {
       const nextIdx = APP.focusedRow * 6 + (APP.focusedCol + 1);
       if (nextIdx < itemsCount) APP.focusedCol += 1;
       break;
+    }
     case KEY_CODES.UP:
       if (APP.focusedRow > 0) APP.focusedRow -= 1;
       else { goBack(); return; }
       break;
-    case KEY_CODES.DOWN:
+    case KEY_CODES.DOWN: {
       const totalRows = Math.ceil(itemsCount / 6);
       if (APP.focusedRow < totalRows - 1) {
         APP.focusedRow += 1;
@@ -470,7 +474,8 @@ function navigateGenreGrid(code) {
         }
       }
       break;
-    case KEY_CODES.OK:
+    }
+    case KEY_CODES.OK: {
       const idx = APP.focusedRow * 6 + APP.focusedCol;
       const card = document.getElementById(`genre-card-${idx}`);
       if (card) {
@@ -479,6 +484,7 @@ function navigateGenreGrid(code) {
         showDetailScreen(id, type);
       }
       return;
+    }
   }
   updateFocusVisuals();
 }
@@ -518,7 +524,7 @@ function navigateWatchlistGrid(code) {
         }
       }
       break;
-    case KEY_CODES.OK:
+    case KEY_CODES.OK: {
       if (APP.focusZone === FOCUS_ZONES.TABBAR) {
         const tabsMap = ['movies', 'tv', 'search', 'watchlist', 'settings'];
         const tab = tabsMap[APP.focusedCol];
@@ -531,6 +537,7 @@ function navigateWatchlistGrid(code) {
         if (item) showDetailScreen(item.id, item.media_type);
       }
       return;
+    }
   }
   updateFocusVisuals();
 }

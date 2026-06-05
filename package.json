@@ -4,7 +4,8 @@
   "description": "VidSrc streaming app for LG webOS TV",
   "main": "index.html",
   "scripts": {
-    "build": "echo 'Build script placeholder'",
+    "build": "node scripts/build.js",
+"ipk": "node scripts/build.js && ares-package --no-minify dist/ -o .",
     "test": "echo 'Test script placeholder'",
     "lint": "eslint --config eslint.config.mjs src/",
     "typecheck": "tsc -p jsconfig.json --noEmit"

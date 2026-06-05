@@ -1,7 +1,22 @@
+let _lastFocusedNode = null;
+let _tabItemsCache = null;
+
+function getTabItems() {
+  if (!_tabItemsCache) {
+    _tabItemsCache = document.querySelectorAll('#nav-tabs .tab-item');
+  }
+  return _tabItemsCache;
+}
+
+function invalidateTabCache() {
+  _tabItemsCache = null;
+}
+
 function updateFocusVisuals() {
-  document.querySelectorAll('.focused').forEach(node => {
-    node.classList.remove('focused');
-  });
+  if (_lastFocusedNode) {
+    _lastFocusedNode.classList.remove('focused');
+    _lastFocusedNode = null;
+  }
 
   const zone = APP.focusZone;
   const col = APP.focusedCol;
@@ -10,11 +25,10 @@ function updateFocusVisuals() {
 
   if (APP.screen === SCREENS.HOME) {
     if (zone === FOCUS_ZONES.TABBAR) {
-      const items = document.querySelectorAll('#nav-tabs .tab-item');
-      focusedNode = items[col];
+      focusedNode = getTabItems()[col];
     } else if (zone === FOCUS_ZONES.HERO) {
-      const btns = document.querySelectorAll('#hero-buttons .hero-btn');
-      focusedNode = btns[col];
+      const heroBtns = document.getElementById('hero-buttons');
+      focusedNode = heroBtns ? heroBtns.children[col] : null;
     } else if (zone === FOCUS_ZONES.ROWS) {
       focusedNode = document.getElementById(`card-${row}-${col}`);
       if (!focusedNode) {
@@ -23,8 +37,8 @@ function updateFocusVisuals() {
     }
   } else if (APP.screen === SCREENS.DETAIL) {
     if (zone === FOCUS_ZONES.DETAIL_ACTIONS) {
-      const btns = document.querySelectorAll('#detail-actions-row .detail-btn');
-      focusedNode = btns[col];
+      const actionRow = document.getElementById('detail-actions-row');
+      focusedNode = actionRow ? actionRow.children[col] : null;
     } else if (zone === FOCUS_ZONES.SEASONS) {
       focusedNode = document.getElementById(`season-tab-${col}`);
     } else if (zone === FOCUS_ZONES.EPISODES) {
@@ -37,8 +51,7 @@ function updateFocusVisuals() {
     }
   } else if (APP.screen === SCREENS.SEARCH) {
     if (zone === FOCUS_ZONES.TABBAR) {
-      const items = document.querySelectorAll('#nav-tabs .tab-item');
-      focusedNode = items[col];
+      focusedNode = getTabItems()[col];
     } else if (zone === FOCUS_ZONES.KEYBOARD) {
       focusedNode = document.getElementById(`search-keyboard-grid-key-${row}-${col}`);
     } else if (zone === FOCUS_ZONES.RESULTS) {
@@ -51,14 +64,13 @@ function updateFocusVisuals() {
     }
   } else if (APP.screen === SCREENS.SETTINGS) {
     if (zone === FOCUS_ZONES.TABBAR) {
-      const items = document.querySelectorAll('#nav-tabs .tab-item');
-      focusedNode = items[col];
+      focusedNode = getTabItems()[col];
     } else if (zone === FOCUS_ZONES.OPTIONS) {
-      const items = document.querySelectorAll('#subtitle-opt-row .settings-opt-card');
-      focusedNode = items[col];
+      const optRow = document.getElementById('subtitle-opt-row');
+      focusedNode = optRow ? optRow.children[col] : null;
     } else if (zone === FOCUS_ZONES.BUTTONS) {
-      const btns = document.querySelectorAll('#settings-view .settings-btn-row button');
-      focusedNode = btns[col];
+      const btnRow = document.getElementById('settings-view');
+      focusedNode = btnRow ? btnRow.querySelector('.settings-btn-row').children[col] : null;
     }
   } else if (APP.screen === SCREENS.GENRE) {
     if (zone === FOCUS_ZONES.GRID) {
@@ -67,8 +79,7 @@ function updateFocusVisuals() {
     }
   } else if (APP.screen === SCREENS.WATCHLIST) {
     if (zone === FOCUS_ZONES.TABBAR) {
-      const items = document.querySelectorAll('#nav-tabs .tab-item');
-      focusedNode = items[col];
+      focusedNode = getTabItems()[col];
     } else if (zone === FOCUS_ZONES.GRID) {
       const idx = row * 6 + col;
       focusedNode = document.getElementById(`watchlist-card-${idx}`);
@@ -77,8 +88,9 @@ function updateFocusVisuals() {
 
   if (focusedNode) {
     focusedNode.classList.add('focused');
+    _lastFocusedNode = focusedNode;
     focusedNode.scrollIntoView({
-      behavior: 'smooth',
+      behavior: 'auto',
       block: 'nearest',
       inline: 'nearest'
     });
@@ -127,8 +139,5 @@ function alignVerticalScroll() {
   const rect = rowNode.getBoundingClientRect();
   const parentRect = main.getBoundingClientRect();
   const scrollTop = rowNode.offsetTop - (parentRect.height / 2) + (rect.height / 2);
-  main.scrollTo({
-    top: Math.max(0, scrollTop),
-    behavior: 'smooth'
-  });
+  main.scrollTop = Math.max(0, scrollTop);
 }

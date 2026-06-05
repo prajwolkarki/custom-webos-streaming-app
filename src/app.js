@@ -169,6 +169,7 @@ function renderRowCards(row, rowIndex) {
   if (!wrapper) return;
   wrapper.innerHTML = '';
 
+  const fragment = document.createDocumentFragment();
   row.items.forEach((item, colIndex) => {
     const card = document.createElement('div');
     card.className = 'card focusable';
@@ -190,6 +191,7 @@ function renderRowCards(row, rowIndex) {
       badgeHtml += `<span class="card-badge badge-new">NEW</span>`;
     }
 
+    const mediaLabel = item.media_type || row.type;
     if (item.poster_path) {
       const posterUrl = `${APP.tmdbImageBase}${item.poster_path}`;
       card.innerHTML = `
@@ -199,7 +201,7 @@ function renderRowCards(row, rowIndex) {
           <h4 class="card-title">${title}</h4>
           <div class="card-info">
             <span>${year}</span>
-            <span style="color: var(--primary-accent); text-transform: uppercase;">${item.media_type || row.type}</span>
+            <span class="card-media-type">${mediaLabel}</span>
           </div>
         </div>
       `;
@@ -213,13 +215,14 @@ function renderRowCards(row, rowIndex) {
           <h4 class="card-title">${title}</h4>
           <div class="card-info">
             <span>${year}</span>
-            <span style="color: var(--primary-accent); text-transform: uppercase;">${item.media_type || row.type}</span>
+            <span class="card-media-type">${mediaLabel}</span>
           </div>
         </div>
       `;
     }
-    wrapper.appendChild(card);
+    fragment.appendChild(card);
   });
+  wrapper.appendChild(fragment);
 
   positionHorizontalRow(rowIndex, rowIndex === APP.focusedRow && APP.focusZone === 'rows' ? APP.focusedCol : 0);
 }
@@ -235,20 +238,11 @@ function renderHeroItem() {
   const year = document.getElementById('hero-year');
   const genres = document.getElementById('hero-genres');
 
-  const newBg = document.createElement('div');
-  newBg.className = 'hero-background';
   if (item.backdrop_path) {
-    newBg.style.backgroundImage = `url(${APP.tmdbBackdropBase}${item.backdrop_path})`;
+    bg.style.backgroundImage = `url(${APP.tmdbBackdropBase}${item.backdrop_path})`;
   } else {
-    newBg.style.background = 'linear-gradient(135deg, #111, #222)';
+    bg.style.background = 'linear-gradient(135deg, #111, #222)';
   }
-
-  document.getElementById('hero-banner').insertBefore(newBg, bg);
-  setTimeout(() => {
-    newBg.classList.add('active');
-    if (bg) bg.remove();
-    newBg.id = 'hero-bg';
-  }, 50);
 
   title.innerText = item.title || item.name || 'Featured Title';
   tagline.innerText = item.overview || 'Featured item description unavailable.';
@@ -257,24 +251,28 @@ function renderHeroItem() {
 
   genres.innerHTML = '';
   if (item.genre_ids) {
+    const fragment = document.createDocumentFragment();
     item.genre_ids.slice(0, 3).forEach(gid => {
       const name = APP.activeTab === 'movies' ? APP.movieGenres[gid] : APP.tvGenres[gid];
       if (name) {
         const pill = document.createElement('span');
         pill.className = 'genre-pill';
         pill.innerText = name;
-        genres.appendChild(pill);
+        fragment.appendChild(pill);
       }
     });
+    genres.appendChild(fragment);
   }
 
   const indicators = document.getElementById('hero-indicators');
   indicators.innerHTML = '';
-  APP.heroItems.forEach((_, idx) => {
+  const fragment = document.createDocumentFragment();
+  for (let i = 0; i < APP.heroItems.length; i++) {
     const dot = document.createElement('div');
-    dot.className = `indicator-dot ${idx === APP.heroIndex ? 'active' : ''}`;
-    indicators.appendChild(dot);
-  });
+    dot.className = `indicator-dot ${i === APP.heroIndex ? 'active' : ''}`;
+    fragment.appendChild(dot);
+  }
+  indicators.appendChild(fragment);
 }
 
 function nextHeroItem() {
@@ -384,7 +382,7 @@ function renderDetailScreenContent() {
       chip.id = `cast-actor-${colIdx}`;
       chip.setAttribute('data-col', colIdx);
 
-      let avatarHtml = '';
+      let avatarHtml;
       if (actor.profile_path) {
         avatarHtml = `<img class="cast-avatar" src="https://image.tmdb.org/t/p/w185${actor.profile_path}" alt="${actor.name}">`;
       } else {
@@ -435,10 +433,11 @@ function renderTVSeasonEpisodes() {
   grid.innerHTML = '';
 
   if (APP.currentSeasonEpisodes.length === 0) {
-    grid.innerHTML = '<div style="grid-column: span 4; text-align: center; padding: 20px;">No episodes listed.</div>';
+    grid.innerHTML = '<div class="empty-episodes-msg">No episodes listed.</div>';
     return;
   }
 
+  const fragment = document.createDocumentFragment();
   APP.currentSeasonEpisodes.forEach((ep, idx) => {
     const card = document.createElement('div');
     card.className = 'episode-card focusable';
@@ -475,8 +474,9 @@ function renderTVSeasonEpisodes() {
       const img = card.querySelector('.episode-thumb');
       imageObserver.observe(img);
     }
-    grid.appendChild(card);
+    fragment.appendChild(card);
   });
+  grid.appendChild(fragment);
 }
 
 /**
@@ -576,7 +576,7 @@ function createRelatedRowHtml(secIdx, title, items) {
 
     let badgeHtml = item.vote_average > 0 ? `<span class="card-badge badge-rating">★ ${rating}</span>` : '';
 
-    let posterInner = '';
+    let posterInner;
     if (item.poster_path) {
       posterInner = `<img class="card-img" data-src="${APP.tmdbImageBase}${item.poster_path}" data-title="${cardTitle}" src="" alt="${cardTitle}">`;
     } else {
@@ -758,14 +758,11 @@ function renderWatchlistGrid() {
   grid.innerHTML = '';
 
   if (APP.watchlist.length === 0) {
-    grid.innerHTML = `
-      <div style="grid-column: span 6; text-align: center; padding: 40px; font-family: Barlow Condensed; font-size: 22px; color: var(--text-secondary);">
-        Your Watchlist is empty. Add movies or TV shows from details view!
-      </div>
-    `;
+    grid.innerHTML = '<div class="empty-grid-msg">Your Watchlist is empty. Add movies or TV shows from details view!</div>';
     return;
   }
 
+  const fragment = document.createDocumentFragment();
   APP.watchlist.forEach((item, idx) => {
     const card = document.createElement('div');
     card.className = 'card focusable';
@@ -784,7 +781,7 @@ function renderWatchlistGrid() {
     let badgeHtml = item.vote_average > 0 ? `<span class="card-badge badge-rating">★ ${rating}</span>` : '';
     badgeHtml += `<span class="card-badge badge-type">${item.media_type}</span>`;
 
-    let posterInner = '';
+    let posterInner;
     if (item.poster_path) {
       posterInner = `<img class="card-img" data-src="${APP.tmdbImageBase}${item.poster_path}" data-title="${title}" src="" alt="${title}">`;
     } else {
@@ -806,8 +803,9 @@ function renderWatchlistGrid() {
       const img = card.querySelector('.card-img');
       imageObserver.observe(img);
     }
-    grid.appendChild(card);
+    fragment.appendChild(card);
   });
+  grid.appendChild(fragment);
 }
 
 function switchTabSearch() {
@@ -882,6 +880,7 @@ function renderSearchResults(results) {
   }
 
   document.getElementById('results-title').innerText = `Search Results (${results.length})`;
+  const fragment = document.createDocumentFragment();
   results.forEach((item, idx) => {
     const card = document.createElement('div');
     card.className = 'card focusable';
@@ -900,7 +899,7 @@ function renderSearchResults(results) {
     let badgeHtml = item.vote_average > 0 ? `<span class="card-badge badge-rating">★ ${rating}</span>` : '';
     badgeHtml += `<span class="card-badge badge-type">${item.media_type}</span>`;
 
-    let posterInner = '';
+    let posterInner;
     if (item.poster_path) {
       posterInner = `<img class="card-img" data-src="${APP.tmdbImageBase}${item.poster_path}" data-title="${title}" src="" alt="${title}">`;
     } else {
@@ -922,8 +921,9 @@ function renderSearchResults(results) {
       const img = card.querySelector('.card-img');
       imageObserver.observe(img);
     }
-    grid.appendChild(card);
+    fragment.appendChild(card);
   });
+  grid.appendChild(fragment);
 }
 
 function switchTabSettings() {
@@ -961,7 +961,7 @@ function updateSetupInputDisplay() {
 }
 
 function launchPlayer(tmdbId, mediaType, seasonNum = null, epNum = null) {
-  let embedUrl = '';
+  let embedUrl;
   let playTitle = APP.currentDetail ? (APP.currentDetail.title || APP.currentDetail.name) : 'Video';
   let playSubtitle = '';
   const langParam = APP.subtitleLang ? `&ds_lang=${APP.subtitleLang}` : '';
@@ -1073,6 +1073,7 @@ async function loadGenreBrowseScreen(genreId, name, type) {
 function renderGenreGrid(newItems) {
   const grid = document.getElementById('genre-grid');
   const startIdx = APP.genreGridItems.length - newItems.length;
+  const fragment = document.createDocumentFragment();
 
   newItems.forEach((item, idx) => {
     const actualIdx = startIdx + idx;
@@ -1092,7 +1093,7 @@ function renderGenreGrid(newItems) {
 
     let badgeHtml = item.vote_average > 0 ? `<span class="card-badge badge-rating">★ ${rating}</span>` : '';
 
-    let posterInner = '';
+    let posterInner;
     if (item.poster_path) {
       posterInner = `<img class="card-img" data-src="${APP.tmdbImageBase}${item.poster_path}" data-title="${title}" src="" alt="${title}">`;
     } else {
@@ -1114,6 +1115,7 @@ function renderGenreGrid(newItems) {
       const img = card.querySelector('.card-img');
       imageObserver.observe(img);
     }
-    grid.appendChild(card);
+    fragment.appendChild(card);
   });
+  grid.appendChild(fragment);
 }

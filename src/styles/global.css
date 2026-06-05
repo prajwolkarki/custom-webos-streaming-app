@@ -234,6 +234,11 @@ body {
   color: #fff;
 }
 
+.meta-pill {
+  font-size: 18px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .hero-buttons {
   display: flex;
   gap: 15px;
@@ -397,6 +402,29 @@ body {
   margin-top: 3px;
   display: flex;
   justify-content: space-between;
+}
+
+.card-media-type {
+  color: var(--primary-accent);
+  text-transform: uppercase;
+}
+
+.empty-grid-msg {
+  grid-column: span 6;
+  text-align: center;
+  padding: 40px;
+  font-family: Barlow Condensed, sans-serif;
+  font-size: 22px;
+  color: var(--text-secondary);
+}
+
+.empty-episodes-msg {
+  grid-column: span 4;
+  text-align: center;
+  padding: 20px;
+  font-family: Barlow Condensed, sans-serif;
+  font-size: 18px;
+  color: var(--text-secondary);
 }
 
 .badge-container {
