@@ -242,8 +242,10 @@ function renderHeroItem() {
 
   if (item.backdrop_path) {
     bg.style.backgroundImage = `url(${APP.tmdbBackdropBase}${item.backdrop_path})`;
+    bg.classList.add('active');
   } else {
     bg.style.background = 'linear-gradient(135deg, #111, #222)';
+    bg.classList.add('active');
   }
 
   title.innerText = item.title || item.name || 'Featured Title';

@@ -16,7 +16,7 @@
     "streaming",
     "vidsrc"
   ],
-  "author": "Your Name",
+  "author": "MrMasukoJhol",
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
