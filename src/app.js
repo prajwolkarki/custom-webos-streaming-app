@@ -20,6 +20,8 @@ const APP = {
   tmdbPosterBase: 'https://image.tmdb.org/t/p/w342',
   tmdbBackdropBase: 'https://image.tmdb.org/t/p/w780',
   vidsrcEmbedBase: 'https://vsembed.ru/embed',
+  vidlinkEmbedBase: 'https://vidlink.pro',
+  streamProvider: 'vidsrc',
   subtitleLang: '',
   heroItems: [],
   heroIndex: 0,
@@ -47,6 +49,7 @@ let hudTimeout = null;
 window.addEventListener('DOMContentLoaded', async () => {
   loadLocalStorage();
   updateSubtitlePreferenceVisual();
+  updateProviderPreferenceVisual();
 
   if (APP.tmdbApiKey === 'YOUR_TMDB_API_KEY' || !APP.tmdbApiKey || APP.tmdbApiKey.trim() === '') {
     openSetupScreen();
@@ -973,21 +976,35 @@ function launchPlayer(tmdbId, mediaType, seasonNum = null, epNum = null) {
   let playTitle = APP.currentDetail ? (APP.currentDetail.title || APP.currentDetail.name) : 'Video';
   let playSubtitle = '';
   const langParam = APP.subtitleLang ? `&ds_lang=${APP.subtitleLang}` : '';
+  const useVidLink = APP.streamProvider === PROVIDERS.VIDLINK;
 
   if (mediaType === 'movie') {
-    embedUrl = `${APP.vidsrcEmbedBase}/movie?tmdb=${tmdbId}&autoplay=1${langParam}`;
-    playSubtitle = 'Feature Movie';
+    if (useVidLink) {
+      embedUrl = `${APP.vidlinkEmbedBase}/movie/${tmdbId}`;
+    } else {
+      embedUrl = `${APP.vidsrcEmbedBase}/movie?tmdb=${tmdbId}&autoplay=1${langParam}`;
+    }
+    playSubtitle = `Feature Movie · ${useVidLink ? 'VidLink' : 'VidSrc'}`;
   } else {
     if (seasonNum !== null && epNum !== null) {
-      embedUrl = `${APP.vidsrcEmbedBase}/tv?tmdb=${tmdbId}&season=${seasonNum}&episode=${epNum}&autoplay=1&autonext=1${langParam}`;
+      if (useVidLink) {
+        embedUrl = `${APP.vidlinkEmbedBase}/tv/${tmdbId}/${seasonNum}/${epNum}`;
+      } else {
+        embedUrl = `${APP.vidsrcEmbedBase}/tv?tmdb=${tmdbId}&season=${seasonNum}&episode=${epNum}&autoplay=1&autonext=1${langParam}`;
+      }
       playSubtitle = `Season ${seasonNum} - Episode ${epNum}`;
       const episode = APP.currentSeasonEpisodes.find(e => e.episode_number == epNum);
       if (episode && episode.name) {
         playSubtitle += `: ${episode.name}`;
       }
+      playSubtitle += ` · ${useVidLink ? 'VidLink' : 'VidSrc'}`;
     } else {
-      embedUrl = `${APP.vidsrcEmbedBase}/tv?tmdb=${tmdbId}${langParam}`;
-      playSubtitle = 'TV Series Discovery';
+      if (useVidLink) {
+        embedUrl = `${APP.vidlinkEmbedBase}/tv/${tmdbId}/1/1`;
+      } else {
+        embedUrl = `${APP.vidsrcEmbedBase}/tv?tmdb=${tmdbId}${langParam}`;
+      }
+      playSubtitle = `TV Series · ${useVidLink ? 'VidLink' : 'VidSrc'}`;
     }
   }
 

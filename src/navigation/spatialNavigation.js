@@ -327,24 +327,29 @@ function triggerSearchEnterAction() {
 
 function navigateSettingsScreen(code) {
   const optsCount = 6;
+  const providerCount = 2;
   switch (code) {
     case KEY_CODES.LEFT:
       if (APP.focusZone === FOCUS_ZONES.TABBAR) APP.focusedCol = Math.max(0, APP.focusedCol - 1);
       else if (APP.focusZone === FOCUS_ZONES.OPTIONS) APP.focusedCol = Math.max(0, APP.focusedCol - 1);
+      else if (APP.focusZone === FOCUS_ZONES.PROVIDER) APP.focusedCol = Math.max(0, APP.focusedCol - 1);
       else if (APP.focusZone === FOCUS_ZONES.BUTTONS) APP.focusedCol = Math.max(0, APP.focusedCol - 1);
       break;
     case KEY_CODES.RIGHT:
       if (APP.focusZone === FOCUS_ZONES.TABBAR) APP.focusedCol = Math.min(4, APP.focusedCol + 1);
       else if (APP.focusZone === FOCUS_ZONES.OPTIONS) APP.focusedCol = Math.min(optsCount - 1, APP.focusedCol + 1);
+      else if (APP.focusZone === FOCUS_ZONES.PROVIDER) APP.focusedCol = Math.min(providerCount - 1, APP.focusedCol + 1);
       else if (APP.focusZone === FOCUS_ZONES.BUTTONS) APP.focusedCol = Math.min(1, APP.focusedCol + 1);
       break;
     case KEY_CODES.UP:
       if (APP.focusZone === FOCUS_ZONES.OPTIONS) { APP.focusZone = FOCUS_ZONES.TABBAR; APP.focusedCol = 4; }
-      else if (APP.focusZone === FOCUS_ZONES.BUTTONS) { APP.focusZone = FOCUS_ZONES.OPTIONS; APP.focusedCol = 0; }
+      else if (APP.focusZone === FOCUS_ZONES.PROVIDER) { APP.focusZone = FOCUS_ZONES.OPTIONS; APP.focusedCol = 0; }
+      else if (APP.focusZone === FOCUS_ZONES.BUTTONS) { APP.focusZone = FOCUS_ZONES.PROVIDER; APP.focusedCol = 0; }
       break;
     case KEY_CODES.DOWN:
       if (APP.focusZone === FOCUS_ZONES.TABBAR) { APP.focusZone = FOCUS_ZONES.OPTIONS; APP.focusedCol = 0; }
-      else if (APP.focusZone === FOCUS_ZONES.OPTIONS) { APP.focusZone = FOCUS_ZONES.BUTTONS; APP.focusedCol = 0; }
+      else if (APP.focusZone === FOCUS_ZONES.OPTIONS) { APP.focusZone = FOCUS_ZONES.PROVIDER; APP.focusedCol = 0; }
+      else if (APP.focusZone === FOCUS_ZONES.PROVIDER) { APP.focusZone = FOCUS_ZONES.BUTTONS; APP.focusedCol = 0; }
       break;
     case KEY_CODES.OK:
       triggerSettingsEnterAction();
@@ -368,6 +373,15 @@ function triggerSettingsEnterAction() {
       localStorage.setItem(STORAGE_KEYS.SUBTITLE_LANG, lang);
       updateSubtitlePreferenceVisual();
       showToast(`Subtitle preference updated to: ${lang || 'None'}`);
+    }
+  } else if (APP.focusZone === FOCUS_ZONES.PROVIDER) {
+    const item = document.querySelectorAll('#provider-opt-row .settings-opt-card')[APP.focusedCol];
+    if (item) {
+      const provider = item.getAttribute('data-provider');
+      APP.streamProvider = provider;
+      localStorage.setItem(STORAGE_KEYS.STREAM_PROVIDER, provider);
+      updateProviderPreferenceVisual();
+      showToast(`Stream provider set to: ${provider === PROVIDERS.VIDLINK ? 'VidLink' : 'VidSrc'}`);
     }
   } else if (APP.focusZone === FOCUS_ZONES.BUTTONS) {
     if (APP.focusedCol === 0) openSetupScreen();

@@ -113,6 +113,9 @@ function updateFocusVisuals() {
     } else if (zone === FOCUS_ZONES.OPTIONS) {
       const optRow = document.getElementById('subtitle-opt-row');
       focusedNode = optRow ? optRow.children[col] : null;
+    } else if (zone === FOCUS_ZONES.PROVIDER) {
+      const provRow = document.getElementById('provider-opt-row');
+      focusedNode = provRow ? provRow.children[col] : null;
     } else if (zone === FOCUS_ZONES.BUTTONS) {
       const btnRow = document.getElementById('settings-view');
       focusedNode = btnRow ? btnRow.querySelector('.settings-btn-row').children[col] : null;

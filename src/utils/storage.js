@@ -7,6 +7,10 @@ function loadLocalStorage() {
   if (sub !== null) {
     APP.subtitleLang = sub;
   }
+  const provider = localStorage.getItem(STORAGE_KEYS.STREAM_PROVIDER);
+  if (provider && (provider === PROVIDERS.VIDSRC || provider === PROVIDERS.VIDLINK)) {
+    APP.streamProvider = provider;
+  }
   try {
     const watch = localStorage.getItem(STORAGE_KEYS.WATCHLIST);
     if (watch) {
@@ -25,6 +29,16 @@ function saveWatchlist() {
 function updateSubtitlePreferenceVisual() {
   document.querySelectorAll('#subtitle-opt-row .settings-opt-card').forEach(card => {
     if (card.dataset.lang === APP.subtitleLang) {
+      card.classList.add('active');
+    } else {
+      card.classList.remove('active');
+    }
+  });
+}
+
+function updateProviderPreferenceVisual() {
+  document.querySelectorAll('#provider-opt-row .settings-opt-card').forEach(card => {
+    if (card.dataset.provider === APP.streamProvider) {
       card.classList.add('active');
     } else {
       card.classList.remove('active');

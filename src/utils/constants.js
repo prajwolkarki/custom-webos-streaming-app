@@ -25,7 +25,13 @@ const STORAGE_KEYS = {
   FAVORITES: 'vidsrc_favorites',
   CONTINUE_WATCHING: 'vidsrc_continue_watching',
   SETTINGS: 'vidsrc_settings',
-  SEARCH_HISTORY: 'vidsrc_search_history'
+  SEARCH_HISTORY: 'vidsrc_search_history',
+  STREAM_PROVIDER: 'stream_provider'
+};
+
+const PROVIDERS = {
+  VIDSRC: 'vidsrc',
+  VIDLINK: 'vidlink'
 };
 
 const FOCUS_ZONES = {
@@ -33,5 +39,6 @@ const FOCUS_ZONES = {
   DETAIL_ACTIONS: 'detail-actions', SEASONS: 'seasons',
   EPISODES: 'episodes', CAST: 'cast', SIMILAR: 'similar',
   RECS: 'recs', KEYBOARD: 'keyboard', RESULTS: 'results',
-  GRID: 'grid', OPTIONS: 'options', BUTTONS: 'buttons'
+  GRID: 'grid', OPTIONS: 'options', BUTTONS: 'buttons',
+  PROVIDER: 'provider'
 };
