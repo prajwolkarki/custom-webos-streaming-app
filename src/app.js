@@ -530,6 +530,147 @@ document.getElementById('detail-screen').addEventListener('click', function (e) 
   }
 });
 
+/**
+ * Delegated click handler for the main #app container.
+ * Covers the top nav tabs, home view (hero + rows + see-all),
+ * search view (keyboard + results), watchlist grid, settings,
+ * and genre browse. Mirrors keyboard/remote navigation for mouse
+ * and trackpad users.
+ */
+document.getElementById('app').addEventListener('click', function (e) {
+  const target = e.target.closest('.focusable');
+  if (!target) return;
+
+  if (target.classList.contains('tab-item')) {
+    const tab = target.getAttribute('data-tab');
+    if (tab === 'movies' || tab === 'tv') switchTab(tab);
+    else if (tab === 'search') switchTabSearch();
+    else if (tab === 'watchlist') switchTabWatchlist();
+    else if (tab === 'settings') switchTabSettings();
+    return;
+  }
+
+  if (target.classList.contains('hero-btn')) {
+    const rows = APP.activeTab === 'movies' ? APP.movieRows : APP.tvRows;
+    APP.focusZone = FOCUS_ZONES.HERO;
+    APP.focusedCol = parseInt(target.getAttribute('data-btn-index'));
+    triggerHomeEnterAction(rows);
+    return;
+  }
+
+  if (target.classList.contains('see-all-btn')) {
+    const rowIdx = parseInt(target.getAttribute('data-row-idx'));
+    APP.focusZone = FOCUS_ZONES.ROWS;
+    APP.focusedRow = rowIdx;
+    APP.focusedCol = (APP.rowColMemory[rowIdx] || 0);
+    updateFocusVisuals();
+    positionHorizontalRow(rowIdx, APP.focusedCol);
+    alignVerticalScroll();
+    const rows = APP.activeTab === 'movies' ? APP.movieRows : APP.tvRows;
+    const rowData = rows[rowIdx];
+    if (!rowData) return;
+    const match = rowData.endpoint.match(/with_genres=([0-9,]+)/);
+    const genreId = match ? match[1] : '';
+    loadGenreBrowseScreen(genreId, rowData.title, rowData.type);
+    return;
+  }
+
+  if (target.classList.contains('card') && target.closest('#home-view')) {
+    const rowIdx = parseInt(target.getAttribute('data-row'));
+    const colIdx = parseInt(target.getAttribute('data-col'));
+    APP.focusZone = FOCUS_ZONES.ROWS;
+    APP.focusedRow = rowIdx;
+    APP.focusedCol = colIdx;
+    positionHorizontalRow(rowIdx, colIdx);
+    alignVerticalScroll();
+    updateFocusVisuals();
+    showDetailScreen(target.getAttribute('data-id'), target.getAttribute('data-type'));
+    return;
+  }
+
+  if (target.classList.contains('keyboard-key') && target.closest('#search-keyboard-grid')) {
+    const parts = target.id.split('-');
+    const row = parseInt(parts[parts.length - 2]);
+    const col = parseInt(parts[parts.length - 1]);
+    APP.focusZone = FOCUS_ZONES.KEYBOARD;
+    APP.focusedRow = row;
+    APP.focusedCol = col;
+    triggerSearchEnterAction();
+    return;
+  }
+
+  if (target.classList.contains('card') && target.closest('#search-results-grid')) {
+    const idx = parseInt(target.id.replace('search-card-', ''));
+    if (Number.isNaN(idx)) return;
+    APP.focusZone = FOCUS_ZONES.RESULTS;
+    APP.focusedRow = Math.floor(idx / 4);
+    APP.focusedCol = idx % 4;
+    updateFocusVisuals();
+    showDetailScreen(target.getAttribute('data-id'), target.getAttribute('data-type'));
+    return;
+  }
+
+  if (target.classList.contains('card') && target.closest('#watchlist-grid')) {
+    const idx = parseInt(target.id.replace('watchlist-card-', ''));
+    const item = APP.watchlist[idx];
+    if (!item) return;
+    APP.focusZone = FOCUS_ZONES.GRID;
+    APP.focusedRow = Math.floor(idx / 6);
+    APP.focusedCol = idx % 6;
+    updateFocusVisuals();
+    showDetailScreen(item.id, item.media_type);
+    return;
+  }
+
+  if (target.classList.contains('card') && target.closest('#genre-grid')) {
+    const idx = parseInt(target.id.replace('genre-card-', ''));
+    const item = APP.genreGridItems[idx];
+    if (!item) return;
+    APP.focusZone = FOCUS_ZONES.GRID;
+    APP.focusedRow = Math.floor(idx / 6);
+    APP.focusedCol = idx % 6;
+    updateFocusVisuals();
+    showDetailScreen(item.id, item.media_type);
+    return;
+  }
+
+  if (target.classList.contains('settings-opt-card') && target.closest('#subtitle-opt-row')) {
+    const idx = Array.prototype.indexOf.call(target.parentNode.children, target);
+    APP.focusZone = FOCUS_ZONES.OPTIONS;
+    APP.focusedCol = idx;
+    triggerSettingsEnterAction();
+    return;
+  }
+
+  if (target.classList.contains('settings-opt-card') && target.closest('#provider-opt-row')) {
+    const idx = Array.prototype.indexOf.call(target.parentNode.children, target);
+    APP.focusZone = FOCUS_ZONES.PROVIDER;
+    APP.focusedCol = idx;
+    triggerSettingsEnterAction();
+    return;
+  }
+
+  if (target.id === 'settings-btn-changekey' || target.id === 'settings-btn-clear') {
+    APP.focusZone = FOCUS_ZONES.BUTTONS;
+    APP.focusedCol = target.id === 'settings-btn-changekey' ? 0 : 1;
+    triggerSettingsEnterAction();
+    return;
+  }
+});
+
+/**
+ * Delegated click handler for the initial setup screen keyboard.
+ */
+document.getElementById('setup-screen').addEventListener('click', function (e) {
+  const target = e.target.closest('.focusable');
+  if (!target || !target.classList.contains('keyboard-key')) return;
+  const parts = target.id.split('-');
+  APP.focusedRow = parseInt(parts[parts.length - 2]);
+  APP.focusedCol = parseInt(parts[parts.length - 1]);
+  updateFocusVisuals();
+  triggerSettingsKeyboardEnterAction();
+});
+
 function initDetailZones() {
   const detail = APP.currentDetail;
   APP.detailZones = ['detail-actions'];
