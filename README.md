@@ -46,6 +46,11 @@ vidsrc-streaming-app/
 └── assets/
 ```
 
+## To run Locally
+```
+npx serve .
+```
+
 ## License
 
 MIT
