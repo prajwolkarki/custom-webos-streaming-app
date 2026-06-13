@@ -120,7 +120,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-text {
@@ -936,6 +938,12 @@ body {
   flex: 3;
 }
 
+.keyboard-key.caps-active {
+  background: rgba(0, 191, 255, 0.25);
+  color: var(--primary-accent);
+  border-color: var(--primary-accent);
+}
+
 .results-panel {
   flex-grow: 1;
   display: flex;
@@ -1080,7 +1088,7 @@ body {
 
 .settings-options-row {
   display: flex;
-  gap: 15px;
+  gap: 5px;
 }
 
 .settings-opt-card {
@@ -1157,7 +1165,13 @@ button {
   outline: none;
 }
 
-h1, h2, h3, h4, h5, h6, p {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
   margin: 0;
 }
 

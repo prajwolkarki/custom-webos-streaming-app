@@ -5,6 +5,7 @@ const SRC = path.join(__dirname, '..', 'src');
 const DIST = path.join(__dirname, '..', 'dist');
 
 const JS_FILES = [
+  'config/webOSTV.js',
   'config/config.js',
   'utils/constants.js',
   'utils/helpers.js',
@@ -54,7 +55,7 @@ html = html.replace(
   `<link rel="stylesheet" href="bundle.css">`
 );
 html = html.replace(
-  /<script src="src\/config\/config\.js"><\/script>[\s\S]*?<script src="src\/app\.js"><\/script>/,
+  /<script src="src\/config\/webOSTV\.js"><\/script>[\s\S]*?<script src="src\/app\.js"><\/script>/,
   `<script src="bundle.js"></script>`
 );
 fs.writeFileSync(path.join(DIST, 'index.html'), html);

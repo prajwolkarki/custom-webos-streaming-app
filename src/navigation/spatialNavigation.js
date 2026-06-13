@@ -310,7 +310,13 @@ function triggerSearchEnterAction() {
     else if (key === 'BACKSPACE') APP.searchQuery = APP.searchQuery.slice(0, -1);
     else if (key === 'CLEAR') APP.searchQuery = '';
     else if (key === 'CLOSE') { goBack(); return; }
-    else APP.searchQuery += key;
+    else if (key === 'CAPS') {
+      APP.keyboardCaps = !APP.keyboardCaps;
+      renderKeyboard('search-keyboard-grid');
+      updateFocusVisuals();
+      return;
+    }
+    else APP.searchQuery += APP.keyboardCaps ? key : key.toLowerCase();
     updateSearchInputDisplay();
     triggerSearchTextChange();
   } else if (APP.focusZone === FOCUS_ZONES.RESULTS) {
@@ -439,7 +445,14 @@ async function triggerSettingsKeyboardEnterAction() {
       showToast("A valid TMDB API key is required.", true);
     }
     return;
-  } else APP.setupQuery += key;
+  }
+  else if (key === 'CAPS') {
+    APP.keyboardCaps = !APP.keyboardCaps;
+    renderKeyboard('setup-keyboard-grid');
+    updateFocusVisuals();
+    return;
+  }
+  else APP.setupQuery += APP.keyboardCaps ? key : key.toLowerCase();
 
   updateSetupInputDisplay();
 

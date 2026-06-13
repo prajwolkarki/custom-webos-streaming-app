@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="src/styles/tv-optimizations.css">
 </head>
 
-<body>
+<body class="dpad-mode">
   <div id="loading-screen" class="loading-screen">
     <div class="spinner"></div>
     <div class="loading-text" id="loading-text">CINESTREAM</div>
@@ -163,9 +163,9 @@
   </div>
 
   <div id="detail-screen" class="detail-screen hidden">
-    <div
+    <div class="detail-back-indicator focusable" id="detail-back-btn"
       style="margin-bottom: 20px; font-family: Barlow Condensed; font-size: 18px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px;">
-      <span style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px;">BACK</span> Returns to browse
+      <span class="back-pill" style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px;">BACK</span> Returns to browse
     </div>
 
     <div class="detail-container">
@@ -212,6 +212,7 @@
     </div>
   </div>
 
+  <script src="src/config/webOSTV.js"></script>
   <script src="src/config/config.js"></script>
   <script src="src/utils/constants.js"></script>
   <script src="src/utils/helpers.js"></script>

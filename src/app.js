@@ -28,6 +28,7 @@ const APP = {
   heroInterval: null,
   searchQuery: '',
   setupQuery: '',
+  keyboardCaps: true,
   setupTarget: 'tmdbApiKey',
   currentGenreId: null,
   currentGenreName: '',
@@ -70,6 +71,12 @@ async function initApplication() {
 
     document.getElementById('setup-screen').classList.add('hidden');
     document.getElementById('app').classList.remove('hidden');
+
+    // Click handlers for UI back buttons (like v2)
+    const detailBackBtn = document.getElementById('detail-back-btn');
+    if (detailBackBtn) detailBackBtn.addEventListener('click', () => goBack());
+    const playerBackBtn = document.querySelector('.player-back-btn');
+    if (playerBackBtn) playerBackBtn.addEventListener('click', () => closePlayer());
 
     await switchTab('movies');
   } catch (err) {
@@ -311,8 +318,13 @@ async function showDetailScreen(id, type) {
     APP.detailHistory.push(APP.currentDetail);
   }
 
+  openScreen('detail');
+
   try {
     const detail = await fetchDetailContent(id, type);
+
+    if (APP.screen !== 'detail') return;
+
     APP.currentDetail = detail;
     renderDetailScreenContent();
 
@@ -326,7 +338,6 @@ async function showDetailScreen(id, type) {
     }
 
     initDetailZones();
-    openScreen('detail');
     updateDetailFocus();
   } catch (err) {
     console.error(err);
@@ -470,8 +481,8 @@ function renderTVSeasonEpisodes() {
     card.innerHTML = `
       <div class="episode-thumb-wrap">
         ${thumbUrl
-          ? `<img class="episode-thumb" data-src="${thumbUrl}" src="" alt="${epTitle}">`
-          : `<div class="card-fallback"><svg class="fallback-svg" viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 12H5V6h14v9z"/></svg></div>`}
+        ? `<img class="episode-thumb" data-src="${thumbUrl}" src="" alt="${epTitle}">`
+        : `<div class="card-fallback"><svg class="fallback-svg" viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 12H5V6h14v9z"/></svg></div>`}
         <span class="episode-number-badge">S${ep.season_number} E${ep.episode_number}</span>
       </div>
       <div class="episode-card-info">
@@ -787,18 +798,32 @@ function goBack() {
     return;
   }
 
-  if (APP.screen === 'detail' && APP.detailHistory.length > 0) {
-    APP.currentDetail = APP.detailHistory.pop();
-    renderDetailScreenContent();
-    if (APP.currentDetail.media_type === 'tv') {
-      document.getElementById('tv-picker-section').classList.remove('hidden');
-      renderTVSeasonsList();
-      loadSeasonEpisodes(APP.currentDetail.id, APP.currentSeasonIndex);
-    } else {
-      document.getElementById('tv-picker-section').classList.add('hidden');
+  if (APP.screen === 'detail') {
+    // Navigate back to a previous detail page (detail-from-detail drilling)
+    if (APP.detailHistory.length > 0) {
+      APP.currentDetail = APP.detailHistory.pop();
+      renderDetailScreenContent();
+      if (APP.currentDetail.media_type === 'tv') {
+        document.getElementById('tv-picker-section').classList.remove('hidden');
+        renderTVSeasonsList();
+        loadSeasonEpisodes(APP.currentDetail.id, APP.currentSeasonIndex);
+      } else {
+        document.getElementById('tv-picker-section').classList.add('hidden');
+      }
+      initDetailZones();
+      updateDetailFocus();
+      return;
     }
-    initDetailZones();
-    updateDetailFocus();
+
+    // Always go back to the originating screen (safety net: default to 'home'
+    // if the stack is empty due to timing or first load edge cases)
+    const prev = APP.screenStack.length > 0 ? APP.screenStack.pop() : 'home';
+    APP.screen = prev;
+    updateScreenVisibility();
+    if (prev === 'home') {
+      startHeroRotation();
+      restoreHomeFocus();
+    }
     return;
   }
 
@@ -815,7 +840,17 @@ function goBack() {
     }
   } else {
     if (APP.screen === 'home') {
-      showToast("Press exit on remote to close application");
+      // If not on movies tab, switch to movies tab first (like v2)
+      if (APP.activeTab !== 'movies') {
+        switchTab('movies');
+        return;
+      }
+      // Use the webOSTV.js platformBack API to hand control back to the OS
+      if (typeof webOS !== 'undefined' && typeof webOS.platformBack === 'function') {
+        webOS.platformBack();
+      } else {
+        showToast("Press the Exit button on your remote to close the app.");
+      }
     } else {
       APP.screen = 'home';
       updateScreenVisibility();
@@ -823,6 +858,7 @@ function goBack() {
       restoreHomeFocus();
     }
   }
+
 }
 
 function updateScreenVisibility() {
@@ -997,11 +1033,14 @@ function renderKeyboard(gridId) {
       keyNode.className = 'keyboard-key focusable';
       keyNode.id = `${gridId}-key-${rowIdx}-${colIdx}`;
       keyNode.setAttribute('data-key', key);
-      keyNode.innerText = key;
+
+      const isLetter = /^[A-Z]$/.test(key);
+      keyNode.innerText = (isLetter && !APP.keyboardCaps) ? key.toLowerCase() : key;
 
       if (key === 'SPACE') keyNode.className += ' wide-3';
       if (key === 'BACKSPACE') keyNode.className += ' wide-2';
       if (key === 'CLEAR' || key === 'CLOSE') keyNode.className += ' wide-2';
+      if (key === 'CAPS' && APP.keyboardCaps) keyNode.className += ' caps-active';
 
       keyboardRow.appendChild(keyNode);
     });
@@ -1207,7 +1246,15 @@ function showPlayerHud(title, subtitle) {
 
 function closePlayer() {
   document.getElementById('player-iframe').src = '';
-  goBack();
+  const prev = APP.screenStack.length > 0 ? APP.screenStack.pop() : 'home';
+  APP.screen = prev;
+  updateScreenVisibility();
+  if (prev === 'home') {
+    startHeroRotation();
+    restoreHomeFocus();
+  } else if (prev === 'detail') {
+    updateDetailFocus();
+  }
 }
 
 async function loadGenreBrowseScreen(genreId, name, type) {
