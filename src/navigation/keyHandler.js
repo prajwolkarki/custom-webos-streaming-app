@@ -271,11 +271,9 @@ function handlePlayerKey(code, e) {
     return;
   }
 
-  // For all other keys (D-pad, OK, number keys etc.) focus the iframe
-  // so the embed's own built-in controls handle them.
-  if (iframe && document.activeElement !== iframe) {
-    iframe.focus({ preventScroll: true });
-  }
+  // Show HUD overlay. Don't focus the iframe — on webOS that captures
+  // subsequent key events (including back) and prevents them from
+  // reaching the document listener.
   showPlayerHudBrief();
 }
 
