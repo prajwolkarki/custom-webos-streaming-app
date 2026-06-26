@@ -1188,6 +1188,22 @@ function launchPlayer(tmdbId, mediaType, seasonNum = null, epNum = null) {
     }
   }
 
+  // On WebOS the browser enforces X-Frame-Options / CSP frame-ancestors from
+  // embed providers, which causes the iframe to be blocked and the app to navigate
+  // back.  The reliable fix is to open the embed URL directly in the browser
+  // (full-screen navigation) instead of inside an iframe.
+  const isWebOS = typeof window.PalmSystem !== 'undefined' ||
+    (window.navigator && window.navigator.userAgent && window.navigator.userAgent.indexOf('Web0S') > -1);
+
+  if (isWebOS) {
+    // Navigate the current page to the embed URL.  The user presses the Back
+    // key on the remote to return to the app (browser back-stack).
+    showToast(`Opening: ${playTitle}`, false);
+    window.location.href = embedUrl;
+    return;
+  }
+
+  // Desktop / non-WebOS fallback: use the in-app iframe player as before.
   showLoading(true, 'Buffering stream source...');
   const iframe = document.getElementById('player-iframe');
   iframe.src = embedUrl;
